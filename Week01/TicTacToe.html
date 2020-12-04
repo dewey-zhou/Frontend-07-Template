@@ -22,12 +22,15 @@
             text-align: center;
             color: red;
         }
+        
     </style>
     <div id="board"></div>
+    <button id="btn" onclick="resert()">重新开始</button>
     <script>
-        let pattern=[[0,1,0],[0,0,0],[0,0,0]]
+        let pattern=[0,0,0,0,0,0,0,0,0]
          // 1:O;2:X
          let color=2
+         
         function show(){
             let board = document.getElementById("board")
             board.innerHTML=''
@@ -36,19 +39,19 @@
                     
                     let cell= document.createElement("div")
                     cell.classList.add("cell")
-                    cell.innerText=pattern[i][j]==1?'O':pattern[i][j]==2?'X':''
-                    cell.addEventListener("click",()=>move(i,j))
+                    cell.innerText=pattern[i*3+j]==1?'O':pattern[i*3+j]==2?'X':''
+                    cell.addEventListener("click",()=>move(i*3+j))
                     board.appendChild(cell)
                 }
 
             }
         }
-        function  move(i,j){
+        function  move(a){
             // 若是有子则不在该处落子
-            if(pattern[i][j]){
+            if(pattern[a]){
                 return
             }
-            pattern[i][j]=color
+            pattern[a]=color
             
             if(check(pattern,color)){
                 alert(color==1?'O is winner':'X is winner')
@@ -63,7 +66,7 @@
         function computerMove(){
             let choice =baseChoice(pattern,color)
             if(choice.point){
-                pattern[choice.point[0]][choice.point[1]]=color
+                pattern[choice.point[0]*3+choice.point[1]]=color
             }
             if(check(pattern,color)){
                 alert(color==1?'O is winner':'X is winner')
@@ -75,7 +78,7 @@
             for(let i=0;i<3;i++){
                 let win =true
                 for(let j=0;j<3;j++){
-                    if(pattern[i][j]!==color){
+                    if(pattern[i*3+j]!==color){
                         win=false
                     }
                 }
@@ -86,7 +89,7 @@
             for(let i=0;i<3;i++){
                 let win =true
                 for(let j=0;j<3;j++){
-                    if(pattern[j][i]!==color){
+                    if(pattern[j*3+i]!==color){
                         win=false
                     }
                 }
@@ -97,7 +100,7 @@
             {
                 let win = true
                 for(let j=0;j<3;j++){
-                    if(pattern[j][j]!==color){
+                    if(pattern[j*3+j]!==color){
                         win=false
                     }
                 }
@@ -108,7 +111,7 @@
             {
                 let win = true
                 for(let j=0;j<3;j++){
-                    if(pattern[j][2-j]!==color){
+                    if(pattern[j*3+2-j]!==color){
                         win=false
                     }
                 }
@@ -118,14 +121,15 @@
             }
         }
         function clone(pattern){
-            return JSON.parse(JSON.stringify(pattern))
+            // return JSON.parse(JSON.stringify(pattern))
+            return Object.create(pattern)
         }
         function willWin(pattern,color){
             for(let i=0;i<3;i++){
                 for(let j=0;j<3;j++){
-                   if(pattern[i][j])continue
+                   if(pattern[i*3+j])continue
                    let tmp =clone(pattern)
-                   tmp[i][j]=color
+                   tmp[i*3+j]=color
                    if(check(tmp,color)){
                        return [i,j]
                    }
@@ -145,9 +149,9 @@
             let point=null
             for(let i=0;i<3;i++){
                 for(let j=0;j<3;j++){
-                    if(pattern[i][j])continue
+                    if(pattern[i*3+j])continue
                     let tmp = clone(pattern)
-                    tmp[i][j]=color
+                    tmp[i*3+j]=color
                     let r=baseChoice(tmp,3-color).result
                     if(-r>result){
                         
@@ -162,6 +166,11 @@
                 result:point?result:0
             }
         }
+        function resert(){
+            console.log('resert')
+            pattern=[0,0,0,0,0,0,0,0,0]
+            show()
+         }
         show(pattern)
         // console.log(baseChoice(pattern,color))
     </script>
