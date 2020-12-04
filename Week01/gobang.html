@@ -6,12 +6,140 @@
     <title>五子棋</title>
 </head>
 <body>
-
-    <div id="board"></div>
+    <div id="board" ></div>
+    <button id="btn" onclick="resert()">重新开始</button>
     <script>
-        // let pattern=new Array(15*15).fill(0)
-        let pattern=[0,0,0,0,0,0,0,0,0]
+        let pattern=new Array(15*15).fill(0)
         console.log(pattern)
+        let color=1
+
+        function show(){
+            let board = document.getElementById("board")
+            board.innerHTML=''
+            for(let i=0;i<15;i++){
+                for(let j=0;j<15;j++){
+                    let cell=document.createElement("div")
+                    let chess=document.createElement("span")
+                    cell.classList.add("cell")
+                    chess.classList.add("iconfont")
+                    if(pattern[i*15+j]==1){
+                    chess.classList.add("icon-white")
+                    }else if(pattern[i*15+j]==2){
+                    chess.classList.add("icon-black")
+                    }
+                    cell.addEventListener("click",()=>move(i*15+j))
+                    cell.appendChild(chess)
+                    board.appendChild(cell)
+                }
+                    // board.appendChild(document.createElement("br"))
+            }
+        }
+        function move(a){
+            // 若有子，则不落下
+            if(pattern[a])return
+            pattern[a]=color
+            if(check(pattern,color,a)){
+                alert(color==2?'黑子胜':'白子胜')
+            }
+            color=3-color
+            show()
+        }
+        function check(pattern,color,a){
+            // 横向
+            for(let i=0;i<5;i++){
+                let win =true
+                for(let j=0-i;j<(5-i);j++){
+                    if(pattern[a+j]!==color){win = false}
+                }
+                if(win){return true}
+            }
+            // 纵向
+            for(let i=0;i<5;i++){
+                let win =true
+                for(let j=0-i;j<(5-i);j++){
+                    if(pattern[a+(15*j)]!==color){win = false}
+                }
+                if(win){return true}
+            } 
+            // 右斜
+            for(let i=0;i<5;i++){
+                let win =true
+                for(let j=0-i;j<(5-i);j++){
+                    if(pattern[a+(16*j)]!==color){win = false}
+                }
+                if(win){return true}
+            } 
+            // 左斜
+            for(let i=0;i<5;i++){
+                let win =true
+                for(let j=0-i;j<(5-i);j++){
+                    if(pattern[a+(14*j)]!==color){win = false}
+                }
+                if(win){return true}
+            } 
+            return false
+        }
+        function resert(){
+            console.log('resert')
+            pattern=new Array(15*15).fill(0)
+            show()
+         }
+        show()
     </script>
+       <link href="./font_2248051_p6bj2fkgaoc/iconfont.css" type="text/css" rel="stylesheet" />
+     <style>
+         #board{
+             width: 1500px;
+            
+         }
+         .cell{
+             width: 100px;
+             height: 100px;
+             position: relative;
+             background-color: rgb(244,194,144);
+             display: inline-block;
+             line-height: 100px;
+            text-align: center;
+            vertical-align: middle;
+         }
+         /* 画十字利用伪元素来添加样式 */
+         .cell:before{
+             content: '';
+             position: absolute;
+             z-index: 1;
+             left: 0;
+             right: 0;
+             top: 50px;
+             height: 1px;
+             background-color: #000;
+         }
+         .cell:after{
+             content: '';
+             position: absolute;
+             z-index: 1;
+             left: 50px;
+             top: 0;
+             bottom: 0;
+             width: 1px;
+             background-color: #000;
+         }
+        .iconfont{
+                position: relative;
+                font-size: 50px;
+                z-index: 2;
+
+        }
+        .icon-white{
+            color: white;
+        }
+        #btn{
+            width: 500px;
+            height: 200px;
+            font-size: 100px;
+        }
+        
+     </style>
+      
+
 </body>
 </html>
