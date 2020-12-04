@@ -25,9 +25,9 @@
     </style>
     <div id="board"></div>
     <script>
-        let pattern=[[0,1,0],[0,2,0],[0,0,0]]
+        let pattern=[[0,1,0],[0,0,0],[0,0,0]]
          // 1:O;2:X
-         let color=1
+         let color=2
         function show(){
             let board = document.getElementById("board")
             board.innerHTML=''
@@ -58,6 +58,18 @@
             if(willWin(pattern,color)){
                 console.log(color==1?'O will winner':'X will winner')
             }
+            computerMove()
+        }
+        function computerMove(){
+            let choice =baseChoice(pattern,color)
+            if(choice.point){
+                pattern[choice.point[0]][choice.point[1]]=color
+            }
+            if(check(pattern,color)){
+                alert(color==1?'O is winner':'X is winner')
+            }
+            color=3-color
+            show()
         }
         function check(pattern,color){
             for(let i=0;i<3;i++){
@@ -111,16 +123,47 @@
         function willWin(pattern,color){
             for(let i=0;i<3;i++){
                 for(let j=0;j<3;j++){
-                   if(pattern[i][j]){continue}
+                   if(pattern[i][j])continue
                    let tmp =clone(pattern)
                    tmp[i][j]=color
                    if(check(tmp,color)){
-                       return true
+                       return [i,j]
                    }
                 }
             }
+            return null
         }
-        show()
+        function baseChoice(pattern,color){
+            let p 
+            if(p=willWin(pattern,color)){
+                return {
+                    point:p,
+                    result:1
+                }
+            }
+            let result =-2
+            let point=null
+            for(let i=0;i<3;i++){
+                for(let j=0;j<3;j++){
+                    if(pattern[i][j])continue
+                    let tmp = clone(pattern)
+                    tmp[i][j]=color
+                    let r=baseChoice(tmp,3-color).result
+                    if(-r>result){
+                        
+                            point=[i,j]
+                            result=-r
+                        
+                    }
+                }
+            }
+            return {
+                point:point,
+                result:point?result:0
+            }
+        }
+        show(pattern)
+        // console.log(baseChoice(pattern,color))
     </script>
 </body>
 </html>
