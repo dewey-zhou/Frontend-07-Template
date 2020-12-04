@@ -147,17 +147,18 @@
             }
             let result =-2
             let point=null
-            for(let i=0;i<3;i++){
+            outer:for(let i=0;i<3;i++){
                 for(let j=0;j<3;j++){
                     if(pattern[i*3+j])continue
                     let tmp = clone(pattern)
                     tmp[i*3+j]=color
                     let r=baseChoice(tmp,3-color).result
                     if(-r>result){
-                        
                             point=[i,j]
                             result=-r
-                        
+                    }
+                    if(result==1){
+                        break outer
                     }
                 }
             }
