@@ -43,6 +43,11 @@
             }
             color=3-color
             show()
+            if(willWin(pattern,color)){
+                console.log(color==2?'黑子快胜':'白子快胜')
+            }
+            
+          
         }
         function check(pattern,color,a){
             // 横向
@@ -78,6 +83,65 @@
                 if(win){return true}
             } 
             return false
+        }
+        function willWin(pattern,color){
+            let p
+            for(let n=0;n<15;n++){
+                for(let m=0;m<15;m++){
+                    let a= 15*n+m
+                    if(pattern[a]==color){
+                        // 横向
+                        for(let i=0;i<5;i++){
+                            let win =0
+                            for(let j=0-i;j<(5-i);j++){
+                                
+                                if(pattern[a+j]==color){win++}
+                                if(pattern[a+j]==0){
+                                    p=[a+j]
+                                    win=win+10}
+                            }
+                            if(win==14){return p}
+                        }
+                        // 纵向
+                        for(let i=0;i<5;i++){
+                            let win =0
+                            for(let j=0-i;j<(5-i);j++){
+                                
+                                if(pattern[a+(15*j)]==color){win++}
+                                if(pattern[a+(15*j)]==0){
+                                    p=a+(15*j)
+                                    win=win+10}
+                            }
+                            if(win==14){return p}
+                        } 
+                        // 右斜
+                        for(let i=0;i<5;i++){
+                            let win =0
+                            for(let j=0-i;j<(5-i);j++){
+                                
+                                if(pattern[a+(16*j)]==color){win++}
+                                if(pattern[a+(16*j)]==0){
+                                    p=a+(16*j)
+                                    win=win+10}
+                            }
+                            if(win==14){return p}
+                        } 
+                        // 左斜
+                        for(let i=0;i<5;i++){
+                            let win =0
+                            for(let j=0-i;j<(5-i);j++){
+                                 
+                                if(pattern[a+(14*j)]==color){win++}
+                                if(pattern[a+(14*j)]==0){
+                                    p=a+(14*j)
+                                    win=win+10}
+                            }
+                            if(win==14){return p}
+                        } 
+                        return false
+                    }
+                }}
+           
         }
         function resert(){
             console.log('resert')
