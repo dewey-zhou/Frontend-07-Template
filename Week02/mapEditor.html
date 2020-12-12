@@ -29,7 +29,32 @@
         <button onclick="empty()">clear</button>
     </div>
     <script>
-        
+        class Sorted{
+            constructor(data,compare){
+                this.data = data.slice()
+                this.compare = compare ||((a,b)=>a-b)
+            }
+            take(){
+                if(!this.data.length)return
+                let min =this.data[0]
+                let minIndex = 0
+
+                for(let i=1;i<this.data.length;i++){
+                    if(this.compare(this.data[i],min)<0){
+                        min =this.data[i]
+                        minIndex =i
+                    }
+                }
+                // 这里是删除数组的minIndex位置的元素，直接删除 时间复杂度是O(n)，所以这里优化下 ，先和数组最后一个元素替换，在删除最后一个元素，这样时间复杂度就是O(1)
+                this.data[minIndex]=this.data[this.data.length-1]
+                this.data.pop()
+                return min
+            }
+            give(v){
+                this.data.push(v)
+            }
+        }
+
         let container = document.getElementById('container')
         let map = localStorage['map']?JSON.parse(localStorage['map']) :Array(10000).fill(0)
         for(let i =0;i<100;i++){
@@ -72,21 +97,22 @@
         }
         async function findpath(map,start,end){
             let table = Object.create(map)
-            let queue = [start]
+            let queue = new Sorted([start],(a,b)=>distance(a)-distance(b))
             // console.log(queue)
             async function insert(i,j,pre){
                 if(i<0||i>=100||j<0||j>=100)return
                 if(table[i*100+j])return
-                // await sleep(0.001)
+                await sleep(1)
                 container.children[i*100+j].style.backgroundColor='lightgreen'
                 table[100*i+j]=pre
-                queue.push([i,j]) 
+                queue.give([i,j]) 
             }
-            while(queue.length){
-                let [i,j]=queue.shift()
+            function distance(point){
+            return (point[0]-end[0])**2+(point[1]-end[1])**2
+                }
+            while(queue.data.length){
+                let [i,j]=queue.take()
                 console.log(i,j)
-                // console.log(a)
-                // let i=a[0],j=a[1]
                 if(i==end[0]&&j==end[1]){
                     let path =[]
                     while(i!=start[0]||j!=start[1]){
@@ -111,6 +137,7 @@
             }
             return null
         }
+        
         function empty(){
             localStorage.clear()
             location.reload()
