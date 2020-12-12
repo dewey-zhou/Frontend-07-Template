@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地图</title>
+</head>
+<body>
+    <style>
+        .cell{
+            width: 6px;
+            height: 6px;
+            display: inline-block;
+            background-color: gray;
+            border-bottom:solid 1px white ;
+            border-right:solid 1px white ;
+            vertical-align: middle;
+            line-height: 7px;
+
+        }
+        #container{
+            width: 701px;
+            font-size: 0;
+        }
+    </style>
+    <div id="container"></div>
+    <div>
+        <button onclick="localStorage['map']=JSON.stringify(map)">save</button>
+        <button onclick="empty()">clear</button>
+    </div>
+    <script>
+        
+        let container = document.getElementById('container')
+        let map = localStorage['map']?JSON.parse(localStorage['map']) :Array(10000).fill(0)
+        for(let i =0;i<100;i++){
+            for(let j=0;j<100;j++){
+                let cell = document.createElement('div')
+                cell.classList.add("cell")
+
+                if(map[100*i+j]==1){
+                    cell.style.backgroundColor = "black"
+                }
+
+                cell.addEventListener('mousemove',()=>{
+                    if(mousedown){
+                        if(clear){
+                            cell.style.backgroundColor =''
+                            map[100*i+j]=0
+                        }else{
+                            cell.style.backgroundColor='black'
+                            map[100*i+j]=1
+                        }
+                    }
+                })
+                
+                container.appendChild(cell)
+            }
+        }
+        let mousedown =false 
+        let clear = false
+        document.addEventListener("mousedown",e=>{
+            mousedown = true
+            clear =(e.which===3)
+        })
+        document.addEventListener('mouseup',()=>mousedown=false)
+        //消除右键的默认值
+        document.addEventListener('contextmenu',e=>e.preventDefault())
+        function sleep(t){
+            return new Promise((res,rej)=>{
+                setTimeout(res,t)
+            })
+        }
+        async function findpath(map,start,end){
+            let table = Object.create(map)
+            let queue = [start]
+            // console.log(queue)
+            async function insert(i,j,pre){
+                if(i<0||i>=100||j<0||j>=100)return
+                if(table[i*100+j])return
+                // await sleep(0.001)
+                container.children[i*100+j].style.backgroundColor='lightgreen'
+                table[100*i+j]=pre
+                queue.push([i,j]) 
+            }
+            while(queue.length){
+                let [i,j]=queue.shift()
+                console.log(i,j)
+                // console.log(a)
+                // let i=a[0],j=a[1]
+                if(i==end[0]&&j==end[1]){
+                    let path =[]
+                    while(i!=start[0]||j!=start[1]){
+                        path.push([i,j])
+                       ;[i,j]=table[i*100+j]
+                        await sleep(1)
+                        container.children[i*100+j].style.backgroundColor="purple"
+                    }
+                    // console.log(path)
+                    return path
+                }
+                await insert(i-1,j,[i,j])
+                await insert(i,j-1,[i,j])
+                await insert(i+1,j,[i,j])
+                await insert(i,j+1,[i,j])
+
+                await insert(i-1,j-1,[i,j])
+                await insert(i-1,j+1,[i,j])
+                await insert(i+1,j-1,[i,j])
+                await insert(i+1,j+1,[i,j])
+
+            }
+            return null
+        }
+        function empty(){
+            localStorage.clear()
+            location.reload()
+        }
+        
+    </script>
+</body>
+</html>
