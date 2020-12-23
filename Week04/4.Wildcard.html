@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function find(s,t){
+            let startCount =0
+            let startIndex=[]
+            for (let i =0;i<t.length;i++){
+                if(t[i]=="*"){
+                    startCount++
+                    startIndex.push(i)
+                }
+            }
+            //处理特殊情况没有*时
+            if(startCount==0){
+                for(let i =0;i<t.length;i++){
+                    if(s[i]!==t[i]&&t[i]!=="?")return false
+                }
+                return true
+            }
+            //开始正式处理
+            let i=0 //i开始跟踪,一直遍历下去，后面的i都是这个 而不是重新定义的 
+            let lastIndex =0
+            //处理第一个*号之前的字符
+            for(i=0;t[i]!=="*";i++){
+                if(s[i]!==t[i]&&t[i]!=="?")return false
+            }
+            //处理第一个*号之后和最后一个*号之前的字符
+            lastIndex=i
+            for(let p =0;p<startCount-1;p++){
+                i++//这里跳过那个*字符
+                let subt =""
+                //下面提取*号之间的字符,并组合成一个字符串
+                while(t[i]!=="*"){
+                    subt+=t[i]
+                    i++
+                }
+                let reg = new RegExp(subt.replace(/\?/g,"[\\s\\S]"),"g")
+                reg.lastIndex=lastIndex
+                if(!reg.exec(s))return false
+                lastIndex=reg.lastIndex
+            }
+            //处理最后一个*号之后的字符,这里注意一下 s.length是因为最后一个*号的存在 导致只需匹配目标字符的最后几个字符就行
+            if(s.length-lastIndex <t.length-startIndex[startIndex.length-1]-1){return false}
+            for(let j= 0;j<=s.length-lastIndex&&t[t.length-j]!=="*";j++){
+                if(t[t.length-j]!==s[s.length-j]&&t[t.length-j]!=="?")return false
+            }
+        return true
+        }
+        // console.log(find("abcabcabxaac","a*b?*b?x*c")) 
+        // console.log(find('absdsdsdsdfcdef', 'ab*cd*sdef') ) 
+        console.log(find("abcabcabsxaac","a*b?*b?x*c")) 
+       
+    </script>
+</body>
+</html>
