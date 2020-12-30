@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="dragtable" style="width: 100px;height: 100px;background-color: pink;"></div>
+    <script>
+        let dragtable = document.getElementById("dragtable")
+        
+        let baseX =0 ,baseY=0
+
+        dragtable.addEventListener("mousedown",function(event){
+            let startX =event.clientX,startY =event.clientY
+
+            let up = event=>{
+                baseX=baseX+event.clientX-startX
+                baseY=baseY+event.clientY-startY
+                document.removeEventListener("mousemove",move)
+                document.removeEventListener("mouseup",up)
+            }
+            let move =event =>{
+                dragtable.style.transform = `translate(${ baseX + event.clientX-startX}px,${baseY+event.clientY-startY}px)`
+            }
+            document.addEventListener("mousemove",move)
+            document.addEventListener("mouseup",up)
+        })
+    </script>
+</body>
+</html>

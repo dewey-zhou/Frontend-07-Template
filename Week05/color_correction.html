@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        .block{
+            display: inline-block;
+            margin: 0 50px;
+        }
+        #color{
+            height: 100px;
+            width: 100px;
+            margin: 20px 350px;
+        }
+    </style>
+    <div class="block">
+        <input id="r0" type="range" min=0 max=255 />
+        <br>
+        <input type="text" id="r1">
+    </div>
+    <div class="block">
+        <input id="g0" type="range" min=0  max=255 />
+        <br>
+        <input type="text" id="g1">
+    </div>
+    <div class="block">
+        <input id="b0" type="range" min=0 max=255 />
+        <br>
+        <input type="text" id="b1">
+    </div>
+    <div id="color" ></div>
+    <script>
+        let callbacks = new Map()
+        let reactivties = new Map()
+        let useReactivies=[]
+        let object = {
+            r:10,
+            b:100,
+            g:255
+        }
+        let po =reactive(object)
+
+        effect(()=>{
+            document.getElementById("r0").value =po.r
+            document.getElementById("r1").value =po.r
+
+            document.getElementById("b0").value =po.b
+            document.getElementById("b1").value =po.b
+
+            document.getElementById("g0").value =po.g
+            document.getElementById("g1").value =po.g
+        })
+
+        document.getElementById("r0").addEventListener("input",event=>po.r=event.target.value)
+        document.getElementById("r1").addEventListener("input",event=>po.r=event.target.value)
+
+        document.getElementById("b0").addEventListener("input",event=>po.b=event.target.value)
+        document.getElementById("b1").addEventListener("input",event=>po.b=event.target.value)
+
+        document.getElementById("g0").addEventListener("input",event=>po.g=event.target.value)
+        document.getElementById("g1").addEventListener("input",event=>po.g=event.target.value)
+
+        effect(()=>{
+            document.getElementById("color").style.backgroundColor=`rgb(${po.r},${po.g},${po.b})`
+        })
+
+
+        function effect(callback){
+            useReactivies =[]
+            callback()
+            console.log(useReactivies)
+
+            for (let reactivity of useReactivies){
+                if(!callbacks.has(reactivity[0])){
+                    callbacks.set(reactivity[0],new Map())
+                }
+                if(!callbacks.get(reactivity[0]).has(reactivity[1])){
+                    callbacks.get(reactivity[0]).set(reactivity[1],[])
+                }
+                callbacks.get(reactivity[0]).get(reactivity[1]).push(callback)
+            }
+
+        }
+        function reactive(object){
+            if(reactivties.has(object))
+                return reactivties.get(object)
+            let proxy = new Proxy(object,{
+                set(obj,prop,val){
+                    obj[prop]=val
+
+                    if(callbacks.get(obj)){
+                        if(callbacks.get(obj).get(prop)){
+                            for(let callback of callbacks.get(obj).get(prop)){
+                                callback()
+                            }
+                        }
+                    }
+                    return obj[prop]
+                },
+                get(obj,prop){
+                    useReactivies.push([obj,prop])
+                    if(typeof obj[prop] ==="object")
+                        return reactive(obj[prop])
+
+                    return obj[prop]
+                }
+            })
+            reactivties.set(object,proxy)
+
+            return proxy
+
+        }
+    </script>
+</body>
+</html>
