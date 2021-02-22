@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <div class='contain'>
+            <ul>
+                <li>
+                    <span id='span' class="span">span</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <script>
+        let dom = document.querySelector(".span")
+       
+        function match(selector,element){
+            let selectorArrs = (selector ||'').split(' ')
+            let index = selectorArrs.length-1
+            let nowElement = element
+
+            while(index>=0){
+                let rule = selectorArrs[index]
+                let parseRuleArr = rule.match(/^([^.^#]+)|(\.[^.^#]+)|(\#[^.^#]+)/g)||[]
+                // console.log(parseRuleArr)
+                while(true){
+                    if(!nowElement.tagName)return false
+                    let isOk = selectorArrIsOK(parseRuleArr,nowElement)
+                    nowElement = nowElement.parentNode     
+                    if(isOk){
+                        break
+                    } else{
+                        continue
+                    }
+                }         
+                index--
+            }
+            function selectorArrIsOK(selectArr,dom){
+              
+                for(let select of selectArr){
+                    if(select.charAt(0)==="."){//class
+                        let hadClass = dom.classList.contains(select.substr(1))
+                        if(!hadClass){return false}
+                    }else if(select.charAt(0)==='#'){//#
+                        if(dom.id !==select.substr(1)){
+                            return false
+                        }
+                    }else{//tagName
+                        if(dom.tagName.toLowerCase() !== select){
+                            return false
+                        }
+                    }
+                }
+                return true
+            }
+            return true
+        }
+        console.log(match("html div div.contain ul li span.span#span",dom))
+        
+    </script>
+</body>
+</html>
