@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+  <div id="a">
+    <span>1</span>
+    <p>2</p>
+    <a href="#">3</a>
+    <div>4</div>
+  </div>
+  <script>
+      var a = document.getElementById("a")
+      function reverseChildren(a){
+          let children = Array.prototype.slice.call(a.childNodes)
+
+          for(let child of children ){
+              a.removeChild(child)
+          }
+        //   element.innerHTML = ''
+          children.reverse()
+          for(let child of children){
+              a.appendChild(child)
+          }
+      }
+      function reverseChildren_better(a){
+          var l = a.childNodes.length
+          while(l-->0){
+              a.appendChild(a.childNodes[l])
+          }
+      }
+      function reverseChildren_best(a){
+        let range = new Range()
+        range.selectNodeContents(a)
+
+        let fragment = range.extractContents()
+        var l = fragment.childNodes.length
+        while(l-- > 0 ){
+            fragment.appendChild(fragment.childNodes[l])
+        }
+        a.appendChild(fragment)
+      }
+      reverseChildren_best(a)
+  </script>
+</body>
+</html> 
